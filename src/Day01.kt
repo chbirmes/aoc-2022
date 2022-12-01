@@ -1,16 +1,14 @@
 fun main() {
 
-    fun descendingGroupSums(input: String) =
+    fun groupSums(input: String) =
         input.split("\n\n")
             .map { group -> group.split("\n").sumOf { it.toInt() } }
-            .sortedDescending()
 
-    fun part1(input: String) =
-        descendingGroupSums(input)
-            .first()
+    fun part1(input: String) = groupSums(input).max()
 
     fun part2(input: String) =
-        descendingGroupSums(input)
+        groupSums(input)
+            .sortedDescending()
             .take(3)
             .sum()
 
