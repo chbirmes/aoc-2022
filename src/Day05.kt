@@ -5,14 +5,11 @@ fun main() {
     fun part1(input: String): String {
         val split = input.split("\n\n")
         val cargoBay = CargoBay.parse(split[0])
-        val instructionRegex = "move (\\d+) from (\\d+) to (\\d+)".toRegex()
-        split[1].lines().forEach { line ->
-            val numbers = instructionRegex.find(line)!!
-                .groupValues
-                .drop(1)
-                .map { it.toInt() }
-            cargoBay.moveSingleCrates(numbers[0], numbers[1], numbers[2])
-        }
+        split[1].lines()
+            .map { parseInstruction(it) }
+            .forEach {
+                cargoBay.moveSingleCrates(it.first, it.second, it.third)
+            }
         return cargoBay.topCrates()
     }
 
@@ -20,14 +17,11 @@ fun main() {
     fun part2(input: String): String {
         val split = input.split("\n\n")
         val cargoBay = CargoBay.parse(split[0])
-        val instructionRegex = "move (\\d+) from (\\d+) to (\\d+)".toRegex()
-        split[1].lines().forEach { line ->
-            val numbers = instructionRegex.find(line)!!
-                .groupValues
-                .drop(1)
-                .map { it.toInt() }
-            cargoBay.moveStackOfCrates(numbers[0], numbers[1], numbers[2])
-        }
+        split[1].lines()
+            .map { parseInstruction(it) }
+            .forEach {
+                cargoBay.moveStackOfCrates(it.first, it.second, it.third)
+            }
         return cargoBay.topCrates()
     }
 
@@ -40,6 +34,14 @@ fun main() {
     println(part1(input))
     println(part2(input))
 }
+
+private val instructionRegex = "move (\\d+) from (\\d+) to (\\d+)".toRegex()
+private fun parseInstruction(line: String) =
+    instructionRegex.find(line)!!
+        .groupValues
+        .drop(1)
+        .map { it.toInt() }
+        .let { Triple(it[0], it[1], it[2]) }
 
 private class CargoBay(val stacks: List<Stack<Char>>) {
 
