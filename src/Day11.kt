@@ -29,7 +29,7 @@ fun main() {
 }
 
 private fun List<Monkey>.playRound(withCoolDown: Boolean) {
-    val modulo = map { it.testDivisor }.fold(1L, Long::times)
+    val modulo = map { it.testDivisor }.reduce(Long::times)
     forEach { monkey ->
         monkey.items.forEach { item ->
             monkey.inspectionCount++
