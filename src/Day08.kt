@@ -40,18 +40,18 @@ private fun List<List<Int>>.column(x: Int): List<Int> =
 
 private fun List<Int>.maxIncreasingIndices(): Set<Int> {
     val leftScanResult = foldIndexed(Pair(-1, emptySet<Int>())) { index, acc, current ->
-        if (current > acc.first) Pair(
-            current,
-            acc.second + index
-        ) else acc
+        if (current > acc.first)
+            Pair(current, acc.second + index)
+        else
+            acc
     }
         .second
 
     val rightScanResult = foldRightIndexed(Pair(-1, emptySet<Int>())) { index, current, acc ->
-        if (current > acc.first) Pair(
-            current,
-            acc.second + index
-        ) else acc
+        if (current > acc.first)
+            Pair(current, acc.second + index)
+        else
+            acc
     }
         .second
 
