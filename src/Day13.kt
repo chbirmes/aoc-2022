@@ -35,7 +35,7 @@ sealed class PacketElement : Comparable<PacketElement> {
         return when (this) {
             is ElementList -> when (other) {
                 is ElementList -> {
-                    list.zip(other.list) { a, b -> a.compareTo(b) }
+                    list.asSequence().zip(other.list.asSequence()) { a, b -> a.compareTo(b) }
                         .firstOrNull { it != 0 }
                         ?: list.size.compareTo(other.list.size)
                 }
@@ -65,7 +65,7 @@ sealed class PacketElement : Comparable<PacketElement> {
 
             private tailrec fun parseStep(s: String, current: ElementList) {
                 if (s.isNotEmpty()) {
-                    val params = when (s.first()) {
+                    val (rest, newCurrent) = when (s.first()) {
                         '[' -> {
                             val newList = ElementList()
                             newList.parent = current
@@ -81,7 +81,7 @@ sealed class PacketElement : Comparable<PacketElement> {
                             Pair(s.substringAfter(number), current)
                         }
                     }
-                    parseStep(params.first, params.second)
+                    parseStep(rest, newCurrent)
                 }
             }
         }
