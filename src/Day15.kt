@@ -27,9 +27,8 @@ fun main() {
                 intersections.asSequence()
                     .filter { it.last >= 0 && it.first <= max }
                     .takeIf { it.count() == 2 }
-                    ?.toList()
-                    ?.sortedBy { it.first }
-                    ?.let { (left, _) -> (left.last + 1) to row }
+                    ?.minBy { it.first }
+                    ?.let { (it.last + 1) to row }
             }
             .filterNotNull()
             .first()
@@ -61,10 +60,8 @@ private data class Sensor(val ownPosition: Pair<Int, Int>, val closestBeaconPosi
 
     companion object {
         fun parse(line: String): Sensor =
-            line.split(":")
-                .let { (left, right) -> Sensor(positionIn(left), positionIn(right)) }
+            line.split(":").let { (left, right) -> Sensor(positionIn(left), positionIn(right)) }
     }
-
 }
 
 private fun Pair<Int, Int>.distanceTo(other: Pair<Int, Int>) =
