@@ -2,13 +2,15 @@ import kotlin.math.absoluteValue
 
 fun main() {
 
-    fun part1(input: List<String>, y: Int): Int {
+    fun part1(input: List<String>, row: Int): Int {
         val sensors = input.map { Sensor.parse(it) }
         val beaconXs = sensors.map { it.closestBeaconPosition }
-            .filter { it.second == y }
-            .map { it.first }
+            .filter { (_, y) -> y == row }
+            .map { (x, _) -> x }
             .toSet()
-        val ranges = sensors.map { it.radiusIntersectionWithLine(y) }
+        val ranges = sensors.asSequence()
+            .map { it.radiusIntersectionWithLine(row) }
+            .filterNotNull()
             .union()
         return ranges.sumOf { it.size() } - beaconXs.size
     }
@@ -18,7 +20,10 @@ fun main() {
         val targetRange = 0..max
         return targetRange.asSequence()
             .map { row ->
-                val intersections = sensors.map { it.radiusIntersectionWithLine(row) }.union()
+                val intersections = sensors.asSequence()
+                    .map { it.radiusIntersectionWithLine(row) }
+                    .filterNotNull()
+                    .union()
                 intersections.asSequence()
                     .filter { it.last >= 0 && it.first <= max }
                     .takeIf { it.count() == 2 }
@@ -33,11 +38,11 @@ fun main() {
 
 
     val testInput = readInput("Day15_test")
-    check(part1(testInput, y = 10) == 26)
+    check(part1(testInput, row = 10) == 26)
     check(part2(testInput, max = 20) == 56_000_011L)
 
     val input = readInput("Day15")
-    println(part1(input, y = 2_000_000))
+    println(part1(input, row = 2_000_000))
     println(part2(input, max = 4_000_000))
 }
 
@@ -48,10 +53,10 @@ private data class Sensor(val ownPosition: Pair<Int, Int>, val closestBeaconPosi
 
     val radius = ownPosition.distanceTo(closestBeaconPosition)
 
-    fun radiusIntersectionWithLine(line: Int): IntRange {
+    fun radiusIntersectionWithLine(line: Int): IntRange? {
         val distance = (ownPosition.second - line).absoluteValue
         val halfIntersectionLength = radius - distance
-        return (ownPosition.first - halfIntersectionLength)..(ownPosition.first + halfIntersectionLength)
+        return if (halfIntersectionLength >= 0) (ownPosition.first - halfIntersectionLength)..(ownPosition.first + halfIntersectionLength) else null
     }
 
     companion object {
@@ -90,7 +95,7 @@ private fun IntRange.union(other: IntRange): List<IntRange> =
 
 private fun IntRange.size() = if (isEmpty()) 0 else (last - first + 1)
 
-private fun Iterable<IntRange>.union() =
+private fun Sequence<IntRange>.union() =
     sortedBy { it.first }.fold(listOf(IntRange.EMPTY)) { rangeList, range ->
         rangeList.dropLast(1) + rangeList.last().union(range)
     }
