@@ -22,8 +22,9 @@ fun main() {
                 intersections.asSequence()
                     .filter { it.last >= 0 && it.first <= max }
                     .takeIf { it.count() == 2 }
+                    ?.toList()
                     ?.sortedBy { it.first }
-                    ?.let { (it.first().last + 1) to row }
+                    ?.let { (left, _) -> (left.last + 1) to row }
             }
             .filterNotNull()
             .first()
